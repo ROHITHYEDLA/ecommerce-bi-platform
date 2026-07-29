@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*.sqlite3
+
+# Virtual Environment
+.venv/
+
+# Environment Variables
+.env
+
+# Logs
+*.log
+
+# Static
+staticfiles/
+
+# Media
+media/
+
+# VS Code
+.vscode/
+
+# React
+frontend/node_modules/
+
+# Build
+dist/
+build/
