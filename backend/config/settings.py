@@ -1,3 +1,7 @@
+from pathlib import Path
+from decouple import config
+from datetime import timedelta
+
 """
 Django settings for config project.
 
@@ -20,8 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-+@_abm&^r)-5^q901e+2=(uh#0y@19v*je=37+r1ac#ap6&_5*'
-
+SECRET_KEY = config("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
