@@ -205,3 +205,11 @@ CORS_ALLOWED_ORIGINS = [
 
 # Uncomment this after creating the custom User model
 AUTH_USER_MODEL = "users.User"
+
+# ------------------------------------------------------------------------------
+# Authentication Backend
+# ------------------------------------------------------------------------------
+
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+]
