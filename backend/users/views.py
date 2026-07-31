@@ -15,6 +15,7 @@ from .serializers import (
     ChangePasswordSerializer,
     LogoutSerializer,
     ForgotPasswordSerializer,
+    ResetPasswordSerializer
 )
 
 class RegisterUserView(generics.CreateAPIView):
@@ -134,5 +135,38 @@ class ForgotPasswordView(APIView):
                 "message": "Password reset token generated successfully.",
                 "token": str(reset_token.token),
             },
+            status=status.HTTP_200_OK,
+        )
+
+class ResetPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ResetPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        token = serializer.validated_data["token"]
+
+        try:
+            reset_token = PasswordResetToken.objects.get(
+                token=token,
+                is_used=False,
+            )
+        except PasswordResetToken.DoesNotExist:
+            return Response(
+                {"error": "Invalid or expired token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        user = reset_token.user
+
+        user.set_password(serializer.validated_data["new_password"])
+        user.save()
+
+        reset_token.is_used = True
+        reset_token.save()
+
+        return Response(
+            {"message": "Password reset successfully."},
             status=status.HTTP_200_OK,
         )
