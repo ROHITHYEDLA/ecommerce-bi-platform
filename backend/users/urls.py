@@ -4,6 +4,7 @@ from .views import (
     RegisterUserView,
     LoginView,
     UserProfileView,
+    UserProfileUpdateView,
 )
 
 urlpatterns = [
@@ -23,5 +24,10 @@ urlpatterns = [
         "profile/",
         UserProfileView.as_view(),
         name="profile",
+    ),
+    path(
+        "profile/update/",
+        UserProfileUpdateView.as_view(),
+        name="profile-update",
     ),
 ]

@@ -6,6 +6,10 @@ from .services import UserService
 from .validators import validate_phone, validate_password
 
 
+# ==========================================================
+# User Registration Serializer
+# ==========================================================
+
 class UserRegistrationSerializer(serializers.ModelSerializer):
 
     password = serializers.CharField(
@@ -38,7 +42,6 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, attrs):
-
         if attrs["password"] != attrs["confirm_password"]:
             raise serializers.ValidationError(
                 {
@@ -49,15 +52,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         return attrs
 
     def create(self, validated_data):
-
         validated_data.pop("confirm_password")
 
         return UserService.create_user(validated_data)
 
 
-
+# ==========================================================
+# User Login Serializer
+# ==========================================================
 
 class UserLoginSerializer(serializers.Serializer):
+
     email = serializers.EmailField()
     password = serializers.CharField(write_only=True)
 
@@ -65,22 +70,36 @@ class UserLoginSerializer(serializers.Serializer):
         email = attrs.get("email")
         password = attrs.get("password")
 
-        user = authenticate(
-            username=email,
-            password=password
-        )
-
-        if not user:
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
             raise serializers.ValidationError(
                 "Invalid email or password."
             )
 
+        if not user.check_password(password):
+            raise serializers.ValidationError(
+                "Invalid email or password."
+            )
+
+        if not user.is_active:
+            raise serializers.ValidationError(
+                "This account is inactive."
+            )
+
         attrs["user"] = user
         return attrs
+
+
+# ==========================================================
+# User Profile Serializer
+# ==========================================================
+
 class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+
         fields = [
             "id",
             "email",
@@ -100,4 +119,16 @@ class UserProfileSerializer(serializers.ModelSerializer):
             "role",
             "date_joined",
             "updated_at",
+        ]
+
+class UserProfileUpdateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = [
+            "username",
+            "first_name",
+            "last_name",
+            "phone_number",
+            "profile_image",
         ]

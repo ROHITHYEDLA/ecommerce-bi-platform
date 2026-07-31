@@ -10,8 +10,8 @@ from .serializers import (
     UserRegistrationSerializer,
     UserLoginSerializer,
     UserProfileSerializer,
+    UserProfileUpdateSerializer,
 )
-
 
 class RegisterUserView(generics.CreateAPIView):
     queryset = User.objects.all()
@@ -51,4 +51,19 @@ class UserProfileView(APIView):
 
     def get(self, request):
         serializer = UserProfileSerializer(request.user, context={"request": request})
+        return Response(serializer.data)
+
+class UserProfileUpdateView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        serializer = UserProfileUpdateSerializer(
+            request.user,
+            data=request.data,
+            partial=True,
+        )
+
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
         return Response(serializer.data)
