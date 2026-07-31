@@ -12,6 +12,7 @@ from .serializers import (
     UserProfileSerializer,
     UserProfileUpdateSerializer,
     ChangePasswordSerializer,
+    LogoutSerializer,
 )
 
 class RegisterUserView(generics.CreateAPIView):
@@ -90,5 +91,19 @@ class ChangePasswordView(APIView):
 
         return Response(
             {"message": "Password changed successfully."},
+            status=status.HTTP_200_OK,
+        )
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = LogoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(
+            {
+                "message": "Logged out successfully."
+            },
             status=status.HTTP_200_OK,
         )
