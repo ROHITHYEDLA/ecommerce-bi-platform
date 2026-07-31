@@ -173,3 +173,8 @@ class LogoutSerializer(serializers.Serializer):
             raise serializers.ValidationError(
                 "Invalid or expired refresh token."
             )
+
+#FORGOT PASSWORD SERIALISER
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()

@@ -2,6 +2,7 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from .models import User, PasswordResetToken
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -13,6 +14,7 @@ from .serializers import (
     UserProfileUpdateSerializer,
     ChangePasswordSerializer,
     LogoutSerializer,
+    ForgotPasswordSerializer,
 )
 
 class RegisterUserView(generics.CreateAPIView):
@@ -104,6 +106,33 @@ class LogoutView(APIView):
         return Response(
             {
                 "message": "Logged out successfully."
+            },
+            status=status.HTTP_200_OK,
+        )
+
+class ForgotPasswordView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = ForgotPasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data["email"]
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User with this email does not exist."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        reset_token = PasswordResetToken.objects.create(user=user)
+
+        return Response(
+            {
+                "message": "Password reset token generated successfully.",
+                "token": str(reset_token.token),
             },
             status=status.HTTP_200_OK,
         )
