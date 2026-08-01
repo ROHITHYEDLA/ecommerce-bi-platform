@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import User, PasswordResetToken
+from django.utils import timezone
+from datetime import timedelta
 
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -154,7 +156,14 @@ class ResetPasswordView(APIView):
             )
         except PasswordResetToken.DoesNotExist:
             return Response(
-                {"error": "Invalid or expired token."},
+                {"error": "Invalid password reset token."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if timezone.now() > reset_token.created_at + timedelta(minutes=15):
+            return Response(
+                {
+                    "error": "Password reset token has expired."
+                },
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
