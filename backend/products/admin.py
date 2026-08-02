@@ -12,7 +12,6 @@ class ProductAdmin(admin.ModelAdmin):
         "category",
         "brand",
         "selling_price",
-        "stock_quantity",
         "is_active",
     )
 

@@ -18,8 +18,6 @@ class ProductSerializer(serializers.ModelSerializer):
             "barcode",
             "cost_price",
             "selling_price",
-            "stock_quantity",
-            "minimum_stock",
             "weight",
             "image",
             "is_active",

@@ -1,33 +1,28 @@
 from django.db import models
 from django.utils.text import slugify
 
-from categories.models import Category
-
 
 class Product(models.Model):
 
-    name = models.CharField(
-        max_length=255,
-        unique=True,
-    )
-
-    slug = models.SlugField(
-        unique=True,
-        blank=True,
-    )
-
     category = models.ForeignKey(
-        Category,
+        "categories.Category",
         on_delete=models.CASCADE,
         related_name="products",
     )
 
-    description = models.TextField(
+    name = models.CharField(max_length=255)
+
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
         blank=True,
     )
 
+    description = models.TextField(blank=True)
+
     brand = models.CharField(
-        max_length=100,
+        max_length=150,
+        blank=True,
     )
 
     sku = models.CharField(
@@ -51,14 +46,6 @@ class Product(models.Model):
         decimal_places=2,
     )
 
-    stock_quantity = models.PositiveIntegerField(
-        default=0,
-    )
-
-    minimum_stock = models.PositiveIntegerField(
-        default=10,
-    )
-
     weight = models.DecimalField(
         max_digits=8,
         decimal_places=2,
@@ -72,17 +59,11 @@ class Product(models.Model):
         null=True,
     )
 
-    is_active = models.BooleanField(
-        default=True,
-    )
+    is_active = models.BooleanField(default=True)
 
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    updated_at = models.DateTimeField(
-        auto_now=True,
-    )
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ["name"]
