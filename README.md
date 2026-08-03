@@ -54,3 +54,15 @@ Security :
 ✅ Password Hashing
 ✅ Token Blacklisting
 
+Phase 2 – Master Data Management (Completed)
+Category Module:
+✅ Category Model
+✅ Serializer
+✅ Service Layer
+✅ Permissions
+✅ Views
+✅ URLs
+✅ CRUD APIs
+✅ Django Admin Integration
+✅ Postman Testing
+
