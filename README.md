@@ -40,3 +40,17 @@ Authentication :
 ✅ User Profile
 ✅ Profile Update
 ✅ Change Password
+
+Password Recovery :
+✅ Forgot Password
+✅ UUID Reset Token
+✅ Token Expiration
+✅ One-Time Token Usage
+✅ Gmail SMTP Integration
+✅ Email-Based Password Reset
+Security :
+✅ JWT Authentication
+✅ Role-Based Authorization
+✅ Password Hashing
+✅ Token Blacklisting
+
