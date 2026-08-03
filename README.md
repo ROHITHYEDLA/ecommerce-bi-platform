@@ -28,3 +28,15 @@ Enterprise E-commerce BI Platform
 ├── CI/CD
 ├── AWS Deployment
 └── Monitoring & Logging
+
+
+
+Phase 1 – Authentication & User Management (Completed)
+
+Authentication :
+✅ User Registration
+✅ JWT Login
+✅ JWT Logout
+✅ User Profile
+✅ Profile Update
+✅ Change Password
