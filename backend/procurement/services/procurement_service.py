@@ -21,26 +21,25 @@ class ProcurementService:
                 "Purchase Order already received."
             )
 
-    for item in purchase_order.items.all():
+        for item in purchase_order.items.all():
 
-        inventory, _ = Inventory.objects.get_or_create(
-            product=item.product,
-            defaults={
-                "warehouse": "Main Warehouse",
-            },
-        )
+            inventory, _ = Inventory.objects.get_or_create(
+                product=item.product,
+                defaults={
+                    "warehouse": "Main Warehouse",
+                },
+            )
 
-        StockService.stock_in(
-            inventory=inventory,
-            quantity=item.quantity,
-            created_by=received_by,
-            reference=purchase_order.po_number,
-            remarks="Purchase Order Received",
-        )   
+            StockService.stock_in(
+                inventory=inventory,
+                quantity=item.quantity,
+                created_by=received_by,
+                reference=purchase_order.po_number,
+                remarks="Purchase Order Received",
+            )
 
         purchase_order.status = "RECEIVED"
         purchase_order.received_date = timezone.now().date()
-
         purchase_order.save()
 
         return purchase_order

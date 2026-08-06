@@ -29,6 +29,9 @@ urlpatterns = [
 
     #suppliers
     path("api/suppliers/",include("suppliers.urls")),
+
+    #procurement
+    path("api/procurement/",include("procurement.urls")),
 ]
 
 if settings.DEBUG:
