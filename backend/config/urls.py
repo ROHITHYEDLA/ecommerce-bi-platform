@@ -23,6 +23,9 @@ urlpatterns = [
 
     #orders
     path("api/orders/",include("orders.urls")),
+
+    #payments
+    path("api/payments/",include("payments.urls")),
 ]
 
 if settings.DEBUG:

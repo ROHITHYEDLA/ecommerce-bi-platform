@@ -1,4 +1,6 @@
 from decimal import Decimal
+from django.db import transaction
+from common.utils import generate_order_number
 
 from inventory.models import Inventory
 from inventory.services import StockService
@@ -10,6 +12,7 @@ from .order_service import OrderService
 class CheckoutService:
 
     @staticmethod
+    @transaction.atomic
     def checkout(
         customer,
         items,
@@ -18,7 +21,7 @@ class CheckoutService:
 
         order = OrderService.create_order(
             customer=customer,
-            order_number="TEMP",
+            order_number=generate_order_number(),
             subtotal=Decimal("0.00"),
             tax=Decimal("0.00"),
             shipping_charge=Decimal("0.00"),
