@@ -17,6 +17,12 @@ urlpatterns = [
 
     # Inventory
     path("api/inventory/", include("inventory.urls")),
+
+    #customers
+    path("api/customers/",include("customers.urls")),
+
+    #orders
+    path("api/orders/",include("orders.urls")),
 ]
 
 if settings.DEBUG:
