@@ -53,7 +53,8 @@ INSTALLED_APPS = [
     "dashboard",
     "notifications",
     "payments",
-    "suppliers"
+    "suppliers",
+    "procurement"
 ]
 
 # ------------------------------------------------------------------------------
