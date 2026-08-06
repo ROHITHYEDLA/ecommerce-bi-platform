@@ -10,6 +10,14 @@ class Product(models.Model):
         related_name="products",
     )
 
+    primary_supplier = models.ForeignKey(
+        "suppliers.Supplier",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="products",
+    )
+
     name = models.CharField(max_length=255)
 
     slug = models.SlugField(
@@ -76,3 +84,4 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+

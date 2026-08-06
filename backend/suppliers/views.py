@@ -1,3 +1,28 @@
-from django.shortcuts import render
+from rest_framework import generics
+from rest_framework.permissions import IsAuthenticated
 
-# Create your views here.
+from .models import Supplier
+from .permissions import IsAdminUserRole
+from .serializers import SupplierSerializer
+
+
+class SupplierListCreateView(generics.ListCreateAPIView):
+
+    queryset = Supplier.objects.all()
+    serializer_class = SupplierSerializer
+
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminUserRole,
+    ]
+
+
+class SupplierDetailView(generics.RetrieveUpdateDestroyAPIView):
+
+    queryset = Supplier.objects.all()
+    serializer_class = SupplierSerializer
+
+    permission_classes = [
+        IsAuthenticated,
+        IsAdminUserRole,
+    ]
