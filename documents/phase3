@@ -1,0 +1,62 @@
+🚀 Phase 3: Product & Category Management
+
+Now we'll start building the core of the e-commerce platform.
+
+Step 1: Category Management
+Create Category
+List Categories
+Get Category by ID
+Update Category
+Delete Category
+Soft Delete (optional)
+Search Categories
+Pagination
+
+
+
+
+Phase 3
+│
+├── Module 1: Category Management
+│     ├── Category Model
+│     ├── CRUD APIs
+│     ├── Admin Panel
+│     ├── Search
+│     ├── Pagination
+│     └── Permissions
+│
+├── Module 2: Product Management
+│     ├── Product Model
+│     ├── Image Upload
+│     ├── Product CRUD
+│     ├── Filtering
+│     ├── Searching
+│     └── Pagination
+│
+└── Module 3: Inventory
+      ├── Stock
+      ├── Low Stock
+      └── Inventory APIs
+      
+      
+      
+      
+      
+   "refresh": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTc4NjI1OTQxNywiaWF0IjoxNzg1NjU0NjE3LCJqdGkiOiJhOGEwYTc5ZTk2ZDQ0YjhiYjYyYzczMzAyM2QzNTM1ZiIsInVzZXJfaWQiOiIxIn0.XCzP-NCsmEVdu0O-PSXy2ZkbNUpqCwR0m4ZGhXxdKYs",
+    "access": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzg1NjU2NDE3LCJpYXQiOjE3ODU2NTQ2MTcsImp0aSI6IjYwZmQ4OThkOWEwZDQxNjdiYTExNzk0YTA4MzQ4YmZkIiwidXNlcl9pZCI6IjEifQ.HN763ceS8dSf7kWbhv2VMCT2lMlUJTx9b3ldKrP7HOM",
+      
+      
+      
+ Build the Category Model
+
+Before writing any code, I want you to understand why each field exists. In enterprise projects, every field serves a purpose.
+
+Field	Why do we need it?
+id	Unique identifier for each category (Django creates this automatically).
+name	The category name (e.g., Electronics, Fashion).
+slug	A URL-friendly unique version of the name, useful for SEO and clean URLs.
+description	Gives more information about the category.
+image	Displays a representative image for the category.
+is_active	Lets us hide a category without deleting it.
+created_at	Records when the category was created.
+updated_at	Records the last modification time.

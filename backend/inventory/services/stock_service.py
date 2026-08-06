@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.core.exceptions import ValidationError
 
 from inventory.models import Inventory, InventoryTransaction
 
@@ -7,22 +8,15 @@ class StockService:
 
     @staticmethod
     @transaction.atomic
-    def add_stock(
-        inventory,
-        quantity,
-        user=None,
-        reference=None,
-        remarks=None,
+    def stock_in(
+        inventory: Inventory,
+        quantity: int,
+        created_by=None,
+        reference: str = "",
+        remarks: str = "",
     ):
-        """
-        Add stock to inventory.
-        """
-
         if quantity <= 0:
-            return {
-                "success": False,
-                "message": "Quantity must be greater than zero."
-            }
+            raise ValidationError("Quantity must be greater than zero.")
 
         inventory.current_stock += quantity
         inventory.save()
@@ -33,39 +27,25 @@ class StockService:
             quantity=quantity,
             reference=reference,
             remarks=remarks,
-            created_by=user,
+            created_by=created_by,
         )
 
-        return {
-            "success": True,
-            "message": "Stock added successfully.",
-            "data": inventory,
-        }
+        return inventory
 
     @staticmethod
     @transaction.atomic
-    def remove_stock(
-        inventory,
-        quantity,
-        user=None,
-        reference=None,
-        remarks=None,
+    def stock_out(
+        inventory: Inventory,
+        quantity: int,
+        created_by=None,
+        reference: str = "",
+        remarks: str = "",
     ):
-        """
-        Remove stock from inventory.
-        """
-
         if quantity <= 0:
-            return {
-                "success": False,
-                "message": "Quantity must be greater than zero."
-            }
+            raise ValidationError("Quantity must be greater than zero.")
 
-        if inventory.available_stock < quantity:
-            return {
-                "success": False,
-                "message": "Insufficient available stock."
-            }
+        if inventory.current_stock < quantity:
+            raise ValidationError("Insufficient stock.")
 
         inventory.current_stock -= quantity
         inventory.save()
@@ -76,91 +56,94 @@ class StockService:
             quantity=quantity,
             reference=reference,
             remarks=remarks,
-            created_by=user,
+            created_by=created_by,
         )
 
-        return {
-            "success": True,
-            "message": "Stock removed successfully.",
-            "data": inventory,
-        }
+        return inventory
 
     @staticmethod
     @transaction.atomic
-    def reserve_stock(inventory, quantity):
-        """
-        Reserve stock for an order.
-        """
-
+    def return_stock(
+        inventory: Inventory,
+        quantity: int,
+        created_by=None,
+        reference: str = "",
+        remarks: str = "",
+    ):
         if quantity <= 0:
-            return {
-                "success": False,
-                "message": "Quantity must be greater than zero."
-            }
+            raise ValidationError("Quantity must be greater than zero.")
 
-        if inventory.available_stock < quantity:
-            return {
-                "success": False,
-                "message": "Not enough stock available."
-            }
-
-        inventory.reserved_stock += quantity
+        inventory.current_stock += quantity
         inventory.save()
 
-        return {
-            "success": True,
-            "message": "Stock reserved successfully.",
-            "data": inventory,
-        }
+        InventoryTransaction.objects.create(
+            inventory=inventory,
+            transaction_type="RETURN",
+            quantity=quantity,
+            reference=reference,
+            remarks=remarks,
+            created_by=created_by,
+        )
+
+        return inventory
 
     @staticmethod
     @transaction.atomic
-    def release_reserved_stock(inventory, quantity):
-        """
-        Release reserved stock.
-        """
-
+    def damage_stock(
+        inventory: Inventory,
+        quantity: int,
+        created_by=None,
+        reference: str = "",
+        remarks: str = "",
+    ):
         if quantity <= 0:
-            return {
-                "success": False,
-                "message": "Quantity must be greater than zero."
-            }
+            raise ValidationError("Quantity must be greater than zero.")
 
-        if inventory.reserved_stock < quantity:
-            return {
-                "success": False,
-                "message": "Reserved stock is insufficient."
-            }
+        if inventory.current_stock < quantity:
+            raise ValidationError("Insufficient stock.")
 
-        inventory.reserved_stock -= quantity
+        inventory.current_stock -= quantity
         inventory.save()
 
-        return {
-            "success": True,
-            "message": "Reserved stock released successfully.",
-            "data": inventory,
-        }
+        InventoryTransaction.objects.create(
+            inventory=inventory,
+            transaction_type="DAMAGE",
+            quantity=quantity,
+            reference=reference,
+            remarks=remarks,
+            created_by=created_by,
+        )
+
+        return inventory
 
     @staticmethod
-    def has_sufficient_stock(inventory, quantity):
-        """
-        Check whether enough stock is available.
-        """
+    @transaction.atomic
+    def adjust_stock(
+        inventory: Inventory,
+        new_quantity: int,
+        created_by=None,
+        reference: str = "",
+        remarks: str = "",
+    ):
+        if new_quantity < 0:
+            raise ValidationError("Quantity cannot be negative.")
 
-        return inventory.available_stock >= quantity
+        difference = new_quantity - inventory.current_stock
+
+        inventory.current_stock = new_quantity
+        inventory.save()
+
+        InventoryTransaction.objects.create(
+            inventory=inventory,
+            transaction_type="ADJUSTMENT",
+            quantity=abs(difference),
+            reference=reference,
+            remarks=remarks,
+            created_by=created_by,
+        )
+
+        return inventory
 
     @staticmethod
-    def is_low_stock(inventory):
-        """
-        Check whether inventory is below minimum stock.
-        """
-
-        return inventory.current_stock <= inventory.minimum_stock
-
-    @staticmethod
-    def needs_reorder(inventory):
-        """
-        Check whether inventory has reached reorder level.
-        """
-
-        return inventory.current_stock <= inventory.reorder_level
+    def validate_stock(inventory: Inventory, quantity: int):
+        return inventory.current_stock >= quantity

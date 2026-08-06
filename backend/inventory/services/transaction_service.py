@@ -1,113 +1,62 @@
-from inventory.models import InventoryTransaction
+from inventory.models import Inventory
+from .stock_service import StockService
 
 
 class TransactionService:
 
     @staticmethod
-    def get_all_transactions():
-        """
-        Retrieve all inventory transactions.
-        """
+    def create_transaction(
+        inventory,
+        transaction_type,
+        quantity,
+        created_by=None,
+        reference="",
+        remarks="",
+    ):
 
-        transactions = (
-            InventoryTransaction.objects
-            .select_related(
-                "inventory",
-                "inventory__product",
-                "created_by",
-            )
-            .all()
-        )
-
-        return {
-            "success": True,
-            "message": "Transactions retrieved successfully.",
-            "data": transactions,
-        }
-
-    @staticmethod
-    def get_transaction(transaction_id):
-        """
-        Retrieve a single transaction.
-        """
-
-        try:
-            transaction = (
-                InventoryTransaction.objects
-                .select_related(
-                    "inventory",
-                    "inventory__product",
-                    "created_by",
-                )
-                .get(id=transaction_id)
+        if transaction_type == "STOCK_IN":
+            return StockService.stock_in(
+                inventory,
+                quantity,
+                created_by,
+                reference,
+                remarks,
             )
 
-            return {
-                "success": True,
-                "message": "Transaction found.",
-                "data": transaction,
-            }
-
-        except InventoryTransaction.DoesNotExist:
-            return {
-                "success": False,
-                "message": "Transaction not found.",
-                "data": None,
-            }
-
-    @staticmethod
-    def get_product_transactions(product_id):
-        """
-        Retrieve transaction history for a product.
-        """
-
-        transactions = (
-            InventoryTransaction.objects
-            .select_related(
-                "inventory",
-                "inventory__product",
-                "created_by",
+        elif transaction_type == "STOCK_OUT":
+            return StockService.stock_out(
+                inventory,
+                quantity,
+                created_by,
+                reference,
+                remarks,
             )
-            .filter(inventory__product_id=product_id)
-        )
 
-        return {
-            "success": True,
-            "message": "Transaction history retrieved successfully.",
-            "data": transactions,
-        }
-
-    @staticmethod
-    def get_transactions_by_type(transaction_type):
-        """
-        Retrieve transactions by type.
-        """
-
-        transactions = (
-            InventoryTransaction.objects
-            .select_related(
-                "inventory",
-                "inventory__product",
-                "created_by",
+        elif transaction_type == "RETURN":
+            return StockService.return_stock(
+                inventory,
+                quantity,
+                created_by,
+                reference,
+                remarks,
             )
-            .filter(transaction_type=transaction_type)
-        )
 
-        return {
-            "success": True,
-            "message": "Transactions retrieved successfully.",
-            "data": transactions,
-        }
+        elif transaction_type == "DAMAGE":
+            return StockService.damage_stock(
+                inventory,
+                quantity,
+                created_by,
+                reference,
+                remarks,
+            )
 
-    @staticmethod
-    def delete_transaction(transaction):
-        """
-        Delete a transaction.
-        """
+        elif transaction_type == "ADJUSTMENT":
+            return StockService.adjust_stock(
+                inventory,
+                quantity,
+                created_by,
+                reference,
+                remarks,
+            )
 
-        transaction.delete()
-
-        return {
-            "success": True,
-            "message": "Transaction deleted successfully.",
-        }
+        raise ValueError("Invalid transaction type.")

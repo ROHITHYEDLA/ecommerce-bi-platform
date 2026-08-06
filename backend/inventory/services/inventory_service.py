@@ -1,88 +1,66 @@
+from django.shortcuts import get_object_or_404
+
 from inventory.models import Inventory
+from products.models import Product
 
 
 class InventoryService:
 
     @staticmethod
-    def get_all_inventory():
-        """
-        Retrieve all inventory records.
-        """
-        inventory = Inventory.objects.select_related("product").all()
-
-        return {
-            "success": True,
-            "message": "Inventory retrieved successfully.",
-            "data": inventory,
-        }
+    def create_inventory(
+        product,
+        warehouse=None,
+        current_stock=0,
+        reserved_stock=0,
+        minimum_stock=5,
+        reorder_level=10,
+        maximum_stock=1000,
+    ):
+        return Inventory.objects.create(
+            product=product,
+            warehouse=warehouse,
+            current_stock=current_stock,
+            reserved_stock=reserved_stock,
+            minimum_stock=minimum_stock,
+            reorder_level=reorder_level,
+            maximum_stock=maximum_stock,
+        )
 
     @staticmethod
-    def get_inventory(product_id):
-        """
-        Retrieve inventory for a specific product.
-        """
-        try:
-            inventory = Inventory.objects.select_related("product").get(
-                product_id=product_id
-            )
-
-            return {
-                "success": True,
-                "message": "Inventory found.",
-                "data": inventory,
-            }
-
-        except Inventory.DoesNotExist:
-            return {
-                "success": False,
-                "message": "Inventory not found.",
-                "data": None,
-            }
+    def get_inventory(inventory_id):
+        return get_object_or_404(
+            Inventory,
+            pk=inventory_id,
+        )
 
     @staticmethod
-    def update_inventory(inventory, validated_data):
-        """
-        Update inventory settings only.
-        Stock values are managed by StockService.
-        """
-
-        inventory.warehouse = validated_data.get(
-            "warehouse",
-            inventory.warehouse,
+    def get_inventory_by_product(product_id):
+        product = get_object_or_404(
+            Product,
+            pk=product_id,
         )
 
-        inventory.minimum_stock = validated_data.get(
-            "minimum_stock",
-            inventory.minimum_stock,
+        return get_object_or_404(
+            Inventory,
+            product=product,
         )
 
-        inventory.reorder_level = validated_data.get(
-            "reorder_level",
-            inventory.reorder_level,
-        )
+    @staticmethod
+    def list_inventory():
+        return Inventory.objects.select_related(
+            "product"
+        ).all()
 
-        inventory.maximum_stock = validated_data.get(
-            "maximum_stock",
-            inventory.maximum_stock,
-        )
+    @staticmethod
+    def update_inventory(inventory, **kwargs):
+
+        for field, value in kwargs.items():
+            setattr(inventory, field, value)
 
         inventory.save()
 
-        return {
-            "success": True,
-            "message": "Inventory updated successfully.",
-            "data": inventory,
-        }
+        return inventory
 
     @staticmethod
     def delete_inventory(inventory):
-        """
-        Delete an inventory record.
-        """
-
         inventory.delete()
-
-        return {
-            "success": True,
-            "message": "Inventory deleted successfully.",
-        }
