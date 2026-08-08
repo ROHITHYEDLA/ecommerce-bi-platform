@@ -6,12 +6,14 @@ import {
 } from "react-router-dom";
 
 import Login from "../pages/auth/Login";
+import ProtectedRoute from "./ProtectedRoute";
+import MainLayout from "../layouts/MainLayout";
 
 function Dashboard() {
   return (
-    <div className="min-h-screen bg-slate-100 p-10">
-      <h1 className="text-3xl font-bold text-slate-900">
-        BI Dashboard
+    <div>
+      <h1 className="text-2xl font-bold text-slate-900">
+        Dashboard
       </h1>
 
       <p className="mt-2 text-slate-600">
@@ -26,21 +28,35 @@ function AppRoutes() {
     <BrowserRouter>
       <Routes>
 
+        {/* Public */}
+
         <Route
           path="/login"
           element={<Login />}
         />
 
-        <Route
-          path="/dashboard"
-          element={<Dashboard />}
-        />
+        {/* Protected */}
+
+        <Route element={<ProtectedRoute />}>
+
+          <Route element={<MainLayout />}>
+
+            <Route
+              path="/dashboard"
+              element={<Dashboard />}
+            />
+
+          </Route>
+
+        </Route>
+
+        {/* Fallback */}
 
         <Route
           path="*"
           element={
             <Navigate
-              to="/login"
+              to="/dashboard"
               replace
             />
           }
