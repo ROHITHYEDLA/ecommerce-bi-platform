@@ -32,6 +32,9 @@ urlpatterns = [
 
     #procurement
     path("api/procurement/",include("procurement.urls")),
+
+    #dashboard
+     path("api/dashboard/",include("dashboard.urls")),
 ]
 
 if settings.DEBUG:
